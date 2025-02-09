@@ -1,0 +1,94 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Void</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <!-- Favicon links -->
+  <link rel="icon" type="image/png" sizes="16x16" href="../image/favicon-16.png">
+  <link rel="icon" type="image/png" sizes="24x24" href="../image/favicon-24.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../image/favicon-32.png">
+  <link rel="icon" href="path/to/favicon.ico" type="image/x-icon">
+</head>
+<h3><a href="/index.html">Home</a></h3>
+
+<body>
+  <h1 id="secure-shell-ssh-key-based-authentication">Secure Shell (SSH) Key-Based Authentication</h1>
+  <p>This guide does not explain what SSH is; rather, it provides a straightforward set of steps to set up key-based SSH
+    access to an EC2 instance. </p>
+  <i>
+    <h4>Published On:2025-02-09</h4>
+  </i>
+  <h4 id="how-to-set-up-key-based-ssh-access-to-an-ec2-instance">How to Set Up Key-Based SSH Access to an EC2 Instance
+  </h4>
+  <h4 id="step-1-generate-your-key-pair-if-you-haven-t-yet-">Step 1: Generate Your Key Pair (If You Haven&#39;t Yet)
+  </h4>
+  <p>If you haven&#39;t already created a key pair on your local machine, generate one using the following command: </p>
+  <pre><code class="lang-bash">ssh-keygen -t rsa -b <span class="hljs-number">2048</span> -f ~/.ssh/my-ec2-<span class="hljs-type">key</span>
+</code></pre>
+  <p>This will generate two files: </p>
+  <ul>
+    <li><code>my-ec2-key</code>: Your private key (keep this safe). </li>
+    <li><code>my-ec2-key.pub</code>: Your public key. </li>
+  </ul>
+  <h4 id="step-2-copy-your-public-key-to-the-ec2-instance">Step 2: Copy Your Public Key to the EC2 Instance</h4>
+  <p>Since you are already logged into the EC2 instance via <strong>EC2 Instance Connect</strong>, the next step is to
+    add your public key to the <strong>~/.ssh/authorized_keys</strong> file for the <code>ec2-user</code> (or whichever
+    user you are using). </p>
+  <ol>
+    <li>
+      <p>Open the public key file on your local machine: </p>
+      <pre><code class="lang-bash"> cat ~/.ssh/<span class="hljs-keyword">my</span>-ec2-key.pub
+</code></pre>
+    </li>
+    <li>
+      <p>Copy the output and paste it into the EC2 instance. </p>
+    </li>
+    <li>
+      <p>On your EC2 instance (while logged in through EC2 Instance Connect), create or edit the
+        <strong>~/.ssh/authorized_keys</strong> file:
+      </p>
+      <pre><code class="lang-bash"> mkdir -<span class="hljs-selector-tag">p</span> ~/<span class="hljs-selector-class">.ssh</span>
+ nano ~/.ssh/authorized_keys
+</code></pre>
+    </li>
+    <li>
+      <p>Paste your public key (from the <code>my-ec2-key.pub</code> file) into the <strong>authorized_keys</strong>
+        file and save the changes. </p>
+    </li>
+    <li>
+      <p>Set the correct permissions for the <code>.ssh</code> directory and <code>authorized_keys</code> file: </p>
+      <pre><code class="lang-bash"> chmod <span class="hljs-number">700</span> ~/.ssh
+ chmod <span class="hljs-number">600</span> ~/.ssh/authorized_keys
+</code></pre>
+    </li>
+    <li>
+      <p>Exit EC2 Instance Connect: </p>
+      <pre><code class="lang-bash"> <span class="hljs-keyword">exit</span>
+</code></pre>
+    </li>
+  </ol>
+  <h4 id="ssh-into-the-ec2-instance-using-the-key">SSH into the EC2 Instance Using the Key</h4>
+  <p>Ensure the private key has the correct permissions: </p>
+  <pre><code class="lang-bash">chmod <span class="hljs-number">400</span> ~/.ssh/my-ec2-<span class="hljs-type">key</span>
+</code></pre>
+  <p>Now, connect to your EC2 instance using: </p>
+  <pre><code class="lang-bash">ssh -<span class="hljs-selector-tag">i</span> ~/.ssh/my-ec2-key ec2-user@&lt;EC2_PUBLIC_IP&gt;
+</code></pre>
+  <h4 id="ssh-using-a-certificate">SSH Using a Certificate</h4>
+  <p>If you are using a certificate for authentication, use the following command: </p>
+  <pre><code class="lang-bash">ssh -<span class="hljs-selector-tag">i</span> ~/.ssh/my-ec2-key -o CertificateFile=/path/to/ssh-certificate-cert<span class="hljs-selector-class">.pub</span> ec2-user@&lt;EC2_PUBLIC_IP&gt;
+</code></pre>
+  <h4 id="example-">Example:</h4>
+  <pre><code class="lang-bash">ssh -i void-test-ssh-<span class="hljs-type">key</span> -o CertificateFile=void-test-ssh-user-cert.pub void@<span class="hljs-number">192.168</span><span class="hljs-number">.0</span><span class="hljs-number">.112</span>
+</code></pre>
+  <hr>
+</body>
+<hr>
+<br>
+Find me on <a href="https://x.com/fit_fr_nothing">X/Twitter.</a>
+<br>
+© 2025 Void
+
+</html>
