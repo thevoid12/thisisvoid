@@ -168,6 +168,30 @@
     <li>Different platforms implement their own authentication layers on top of OAuth, which is <strong>not the standard
         practice</strong>. </li>
   </ul>
+  <p>Let&#39;s consider an example:</p>
+  <ul>
+    <li>Suppose your app allows users to sign in using Google and view their private dashboard.</li>
+    <li>If you only use OAuth:
+      The user authorizes your app to access their Google Contacts API.</li>
+    <li>Google sends an Access Token to your app.</li>
+    <li>Your app can use this access token to fetch contacts from Google.</li>
+    <li>However, this access token does not prove who the user is. it only grants permission to access data.</li>
+    <li>Anyone who gets the Access Token (attacker or legitimate user) can access the Google Contacts API without
+      proving their identity.</li>
+    <li>Now, suppose you integrate only OAuth for your client app authentication:<ul>
+        <li>The user authorizes your app to access their Google Profile API.</li>
+        <li>Google sends an Access Token.</li>
+        <li>Your app uses this token to fetch the user&#39;s profile information (like name and email).</li>
+        <li>Based on this fetched data, your app assumes the user is authenticated.</li>
+        <li>he access token does not guarantee that the user requesting the profile is the real user. it only shows that
+          someone authorized the app.</li>
+        <li>If an attacker gets the access token, they can fetch the same user profile data without proving their
+          identity.</li>
+        <li>The app is simply trusting the API response without verifying if the token really represents the user.</li>
+      </ul>
+    </li>
+  </ul>
+
   <hr>
   <h2 id="openid-connect-oidc-">OpenID Connect (OIDC)</h2>
   <p>To solve the problem of <strong>needing user identity verification</strong>, <strong>OIDC</strong> adds an
@@ -230,6 +254,88 @@
   </table>
   <p><img src="img/4.png" alt="OIDC Flow"> </p>
   <hr>
+  <h2 id="reason-why-oauth-isnt-enough-for-authentication-and-combination-of-oauth-oidc-is-the-way-to-go">Reason why
+    oauth isnt enough for authentication and Combination of oauth +oidc is the way to go</h2>
+  <ul>
+    <li>The flow goes like this:</li>
+    <li>User logs in via Google or whatever identity provider. for this example we will use google.</li>
+    <li>Google (OIDC Provider) authenticates the user.</li>
+    <li>Google sends two tokens to your app:<ul>
+        <li>Access Token (for accessing Google APIs like Contacts or Calendar)</li>
+        <li>ID Token (for authenticating the user identity)</li>
+        <li>The ID Token contains:
+          sub: Unique user ID (Google&#39;s internal user ID)
+          email: User&#39;s email address
+          name: User&#39;s name
+          iat &amp; exp: Token issued time &amp; expiry time
+          Other user details</li>
+        <li>our app backend will verify the jwt id token </li>
+        <li>if valid we authenticate.</li>
+      </ul>
+    </li>
+  </ul>
+  <h3 id="why-is-the-id-token-trustworthy-">Why Is the ID Token Trustworthy?</h3>
+  <ul>
+    <li>The ID Token is digitally signed by Google using a private key.</li>
+    <li>Your backend can verify this signature using Google&#39;s public keys.</li>
+    <li>If the signature is valid, you know:<ul>
+        <li>The token is not tampered.</li>
+        <li>The token is issued by Google.</li>
+        <li>The user identity is genuine.<h4 id="what-happens-if-someone-steals-the-access-token-">What Happens if
+            Someone Steals the Access Token?</h4>
+        </li>
+      </ul>
+    </li>
+    <li>
+      <p><strong>if we have only implemented oauth:</strong></p>
+      <ul>
+        <li>The access token can be used to access APIs but does not prove user identity.</li>
+        <li>The access token can be granted to any client app that the user has authorized, not necessarily your app.
+        </li>
+        <li>The access token does not contain identity information like email or user ID.</li>
+        <li>Resource servers using the access token do not verify the user&#39;s identity, only the token&#39;s
+          validity.</li>
+        <li>so if you have this access token you can get into the system because you are authorized</li>
+      </ul>
+    </li>
+    <li>
+      <p><strong>if we have implemented oidc on top of oauth:</strong></p>
+      <ul>
+        <li>The access token alone cannot be used to prove identity.</li>
+        <li>The attacker would need the ID Token + private key verification to impersonate the user</li>
+        <li>this id token is generated using the scope openid and it is generated only once. just at the time of
+          login.
+          we cannot generate again with just the access token. so if someone gets our access token since they cant get
+          out id token we are safe with oidc.</li>
+      </ul>
+    </li>
+    <li>Access Token and ID Token Are Issued Separately</li>
+    <li>The Access Token is meant for API resource access (like Google Contacts or Calendar). this is oauth flow.</li>
+    <li>The ID Token is only issued during the initial OIDC authorization flow, specifically when the openid scope is
+      requested.</li>
+    <li>The ID Token is not retrievable via any API endpoint. it&#39;s only given once during the login flow.</li>
+    <li>Access Token Is for APIs, Not Identity</li>
+    <li>Access tokens are typically sent to resource servers (like Google Contacts API).</li>
+    <li>Resource servers never return ID Tokens. they only allow access to the requested resources. which is the oauth
+      flow.</li>
+  </ul>
+  <h3 id="what-if-the-attacker-steals-both-tokens-">What If the Attacker Steals Both Tokens?</h3>
+  <p>Yes, if the attacker steals both the Access Token and ID Token simultaneously, they can access the app for the
+    ID
+    Token&#39;s lifetime (5-10 mins).</p>
+  <p>However, this risk is minimized by:</p>
+  <ul>
+    <li>Short expiration of ID Tokens.</li>
+    <li>Backend verification of signature, audience, and expiration on every request.</li>
+    <li>OIDC providers often include:<ul>
+        <li>Nonce (Random value to prevent token reuse)</li>
+        <li>aud claim (Token is valid only for the app that requested it)</li>
+        <li>iat claim (Issued At time)</li>
+        <li>If the attacker reuses the same ID Token later, the nonce check will block the request.</li>
+      </ul>
+    </li>
+  </ul>
+  <hr>
   <h2 id="refresh-tokens">Refresh Tokens</h2>
   <h3 id="purpose-of-refresh-tokens">Purpose of Refresh Tokens</h3>
   <ul>
@@ -257,7 +363,8 @@
     <li><strong>Better user experience</strong> (fewer re-logins). </li>
     <li><strong>Required for offline access</strong> to user data. </li>
   </ul>
-  <p>Even when an <strong>access token expires</strong>, the user <strong>remains logged in</strong>, but API calls will
+  <p>Even when an <strong>access token expires</strong>, the user <strong>remains logged in</strong>, but API calls
+    will
     fail until a new token is obtained.</p>
 </body>
 
