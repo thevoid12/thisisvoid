@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consistency</title>
+</head>
+
+<body>
+  <link rel="stylesheet" href="/assets/css/styles.css" type="text/css">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon-16.png">
+<link rel="icon" type="image/png" sizes="24x24" href="/assets/images/favicon-24.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32.png">
+<div class="header">
+  <div class="navbar-container">
+    <div class="navbar-title">
+      <a href="/index.html" class="navbar-brand">
+        <img src="/assets/images/favicon-32.png" alt="Logo" class="navbar-favicon">
+        thisisvoid.in
+      </a>
+    </div>
+
+    <section>
+      <ul class="navbar-menu">
+        <li><a href="./about.html">about</a></li>
+        <li><a href="./projects.html">code</a></li>
+        <li><a href="./reads.html">reads</a></li>
+        <li><a href="./readlogs.html">readlogs</a></li>
+        <li><a href="./watchlogs.html">watchlogs</a></li>
+      </ul>
+    </section>
+  </div>
+
+</div>
+
+
+  <div class="blog-post-container">
+    <span class="blog-post-date">4 April 2025</span>
+    <div class="blog-post-content">
+      <h1 id="consistency">Consistency</h1>
+
+<ul>
+<li><p>Consistency refers to a database query returning the same data each time the same request is made.</p>
+
+<h2 id="eventual-consistency-and-strong-consistency">eventual consistency and strong consistency:</h2></li>
+
+<li><p>Eventual Consistency is a guarantee that when an update is made in a distributed database, that update will eventually be reflected in all nodes that store the data, resulting in the same response every time the data is queried.</p></li>
+
+<li><p>Strong consistency means the latest data is returned, but, due to internal consistency methods, it may result with higher latency or delay because all nodes need to be data replicated before displaying data. which takes a bit more time.</p></li>
+
+<li><p>With eventual consistency, results are less consistent early on, but they are provided much faster with low latency. Early results of eventual consistency data queries may not have the most recent updates because it takes time for updates to reach replicas across a database cluster.</p></li>
+
+<li><p>The records stay available, but once the transaction has completed across a majority of nodes, the transaction is deemed successful. Data replication across all nodes can take a little more time, but the data in all nodes will become consistent eventually.</p></li>
+</ul>
+
+<h2 id="acid-vs-base-how-is-eventual-consistency-different-from-strong-consistency">ACID vs. BASE: How is Eventual Consistency Different from Strong Consistency?</h2>
+
+<ul>
+<li><p>Distributed databases with a BASE model give high availability.</p></li>
+
+<li><p>Early results of eventual consistency data queries may not have the most recent updates. This is because it takes time for updates to reach replicas across a database cluster. In strong consistency, data is sent to every replica the moment a query is made. This causes delay because responses to any new requests must wait while the replicas are updated. When the data is consistent, the waiting requests are handled in the order they arrived and the cycle repeats.</p></li>
+
+<li><p>In contrast to <strong>SQL’s ACID</strong> guarantees, <strong>NoSQL</strong> databases provide so-called <strong>BASE</strong> guarantees.</p></li>
+
+<li><p>A BASE enables availability and relaxes the stringent consistency. The acronym BASE designates:</p>
+
+<ul>
+<li><strong>Basic Availability</strong> – Data is available most of the time, even during a partial system failure.</li>
+<li><strong>Soft state</strong> – replicas are not consistent all the time.</li>
+<li><strong>Eventual consistency</strong>– data will become consistent at some point in time, with no guarantee when.</li>
+</ul></li>
+
+<li><p>As such, NoSQL databases sacrifice a degree of consistency in order to increase availability. Rather than providing strong consistency, they provide eventual consistency. This means that a datastore that provides BASE guarantees can occasionally fail to return the result of the latest WRITE.</p></li>
+
+<li><p>Eventual consistency in NoSQL supports the BASE (basically available eventually consistent) pattern for speed and scalability.</p></li>
+</ul>
+
+<h2 id="eventual-consistency-examples">Eventual Consistency Examples:</h2>
+
+<ul>
+<li><p>concept is same but implementation  of eventual consistency can differ from player to player</p></li>
+
+<li><p><strong>DynamoDB and Cassandra</strong> use quorum-based models for balancing consistency and availability, especially in write-heavy systems.</p></li>
+
+<li><p><strong>Redis emphasizes</strong> low-latency reads/writes with asynchronous replication, making it great for caching but limited in strong consistency.</p></li>
+
+<li><p><strong>Elasticsearch</strong> is search-optimized, but its eventual consistency is influenced by both replication lag and index refresh intervals, blending models from others.</p></li>
+</ul>
+
+<h4 id="eventual-consistency-in-dynamodb-architecture">Eventual Consistency in DynamoDB Architecture:</h4>
+
+<ul>
+<li><p>DynamoDB is a fully managed NoSQL database by AWS.</p></li>
+
+<li><p>It uses replication across multiple availability zones (AZs) in a region for high availability and fault tolerance.</p></li>
+
+<li><p>It is based on ideas from Amazon Dynamo, which uses ring topology with quorum-based reads/writes.</p>
+
+<h5 id="consistency-model">Consistency Model:</h5></li>
+</ul>
+
+<p><strong>DynamoDB offers two types of read consistency:</strong></p>
+
+<ul>
+<li><p>Eventually Consistent Reads (default): Reads might not reflect the results of a recently completed write immediately.</p></li>
+
+<li><p>Strongly Consistent Reads: Returns the latest value, assuming a majority quorum.</p>
+
+<h5 id="how-it-works">How it works:</h5></li>
+
+<li><p>Writes are replicated across multiple nodes (AZs).</p></li>
+
+<li><p>Eventually consistent reads may hit a node that hasn&rsquo;t received the latest update yet.</p></li>
+
+<li><p>With strong consistency, DynamoDB ensures that the read happens after confirming write propagation to a majority of replicas.</p>
+
+<h5 id="ring-topology-analogy">Ring Topology Analogy:</h5></li>
+
+<li><p>Though AWS hides the internals, conceptually it&rsquo;s similar to Dynamo ring-based architecture where data is distributed using consistent hashing, and each item is replicated across multiple nodes.</p>
+
+<h4 id="eventual-consistency-in-cassandra">Eventual Consistency in Cassandra</h4></li>
+
+<li><p>Peer-to-peer distributed database, unlike DynamoDB’s managed service.</p></li>
+
+<li><p>Nodes are organized in a ring topology using consistent hashing.</p></li>
+
+<li><p>No master node — all nodes are equal.</p>
+
+<h5 id="consistency-model-1">Consistency Model:</h5></li>
+
+<li><p>Cassandra uses tunable consistency:</p>
+
+<ul>
+<li><p>You choose the number of replicas that must acknowledge a read/write operation (e.g., QUORUM, ALL, ONE).</p></li>
+
+<li><p>Write may be accepted by a few nodes and propagated to others asynchronously (hinted handoff, anti-entropy repairs).</p>
+
+<h5 id="how-it-works-1">How it works:</h5></li>
+</ul></li>
+
+<li><p>Write goes to a coordinator node, which forwards to replica nodes.</p></li>
+
+<li><p>Read requests can return stale data if they hit a node that hasn’t received the latest write — eventual consistency.</p></li>
+
+<li><p>If the read hits a QUORUM, it increases the chances of returning the latest data.</p></li>
+
+<li><p>Cassandra uses read repair and gossip protocols to eventually bring all replicas in sync.</p></li>
+</ul>
+
+<h4 id="eventual-consistency-in-reddis">Eventual Consistency in Reddis</h4>
+
+<ul>
+<li><p>Redis follows a master-slave (primary-replica) replication model.</p></li>
+
+<li><p>In Redis Cluster, data is sharded across multiple masters, each having replicas.</p>
+
+<h5 id="consistency-model-2">Consistency Model:</h5></li>
+
+<li><p>Asynchronous replication from master to replicas.</p></li>
+
+<li><p>There is no quorum-based read/write mechanism like Cassandra or DynamoDB.</p></li>
+
+<li><p>The master node (also called primary) does not wait for the replicas (secondary nodes) to confirm that they have received and stored the data before confirming the write operation to the client.</p>
+
+<ul>
+<li>The master writes the data.</li>
+<li>It immediately acknowledges success to the client.</li>
+<li>Then, in the background, it sends that data to the replica nodes.</li>
+<li>If the replicas are slow, lagging, or temporarily unavailable — the master doesn’t wait. It continues serving new requests.</li>
+</ul></li>
+
+<li><p>they do this form for replication as a tradeoff for speed</p></li>
+</ul>
+
+<h5 id="how-it-works-2">How it works:</h5>
+
+<ul>
+<li><p>Writes go to the master, and then the changes are asynchronously replicated to replicas.</p></li>
+
+<li><p>If a read hits a replica, it might get stale data until replication catches up.</p></li>
+
+<li><p>Failover: Redis Sentinel or Redis Cluster can promote a replica to master — but depending on replication lag, data loss is possible.</p>
+
+<h5 id="eventual-consistency-pattern">Eventual Consistency Pattern:</h5></li>
+
+<li><p>The key principle is: eventual consistency is achieved via replication lag reads from replicas may lag behind writes. because of this asyncronous nature of replication we may not be 100% sure that our data is replicated so eventually consistent</p></li>
+
+<li><p>Strong consistency = accuracy first, speed second</p></li>
+
+<li><p>Eventual consistency = speed first, accuracy eventually</p></li>
+
+<li><p>BASE model helps systems scale easily, while ACID helps keep data precise and reliable</p></li>
+
+<li><p>Tunable consistency (like in Cassandra) gives a flexible middle ground between speed and correctness.</p></li>
+</ul>
+
+    </div>
+  </div>
+
+  <footer class="footer-container">
+  <span>Built using Hanamark</span>
+  <span>Find me on <a href="https://x.com/fit_fr_nothing">X/Twitter</a></span>
+  <span>© 2025 Void</span>
+</footer>
+
+</body>
+
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How to Secure Shell (SSH) Key-Based Authentication</title>
+</head>
+
+<body>
+  <link rel="stylesheet" href="/assets/css/styles.css" type="text/css">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon-16.png">
+<link rel="icon" type="image/png" sizes="24x24" href="/assets/images/favicon-24.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32.png">
+<div class="header">
+  <div class="navbar-container">
+    <div class="navbar-title">
+      <a href="/index.html" class="navbar-brand">
+        <img src="/assets/images/favicon-32.png" alt="Logo" class="navbar-favicon">
+        thisisvoid.in
+      </a>
+    </div>
+
+    <section>
+      <ul class="navbar-menu">
+        <li><a href="./about.html">about</a></li>
+        <li><a href="./projects.html">code</a></li>
+        <li><a href="./reads.html">reads</a></li>
+        <li><a href="./readlogs.html">readlogs</a></li>
+        <li><a href="./watchlogs.html">watchlogs</a></li>
+      </ul>
+    </section>
+  </div>
+
+</div>
+
+
+  <div class="blog-post-container">
+    <span class="blog-post-date">4 April 2025</span>
+    <div class="blog-post-content">
+      <h1 id="how-to-secure-shell-ssh-key-based-authentication">How to Secure Shell (SSH) Key-Based Authentication</h1>
+
+<p>This guide does not explain what SSH is; rather, it provides a straightforward set of steps to set up key-based SSH access to an EC2 instance.</p>
+
+<h4 id="how-to-set-up-key-based-ssh-access-to-an-ec2-instance">How to Set Up Key-Based SSH Access to an EC2 Instance</h4>
+
+<h4 id="step-1-generate-your-key-pair-if-you-haven-t-yet">Step 1: Generate Your Key Pair (If You Haven&rsquo;t Yet)</h4>
+
+<p>If you haven&rsquo;t already created a key pair on your local machine, generate one using the following command:</p>
+
+<pre><code class="language-bash">ssh-keygen -t rsa -b 2048 -f ~/.ssh/my-ec2-key
+</code></pre>
+
+<p>This will generate two files:</p>
+
+<ul>
+<li><code>my-ec2-key</code>: Your private key (keep this safe).<br>
+</li>
+<li><code>my-ec2-key.pub</code>: Your public key.<br>
+</li>
+</ul>
+
+<h4 id="step-2-copy-your-public-key-to-the-ec2-instance">Step 2: Copy Your Public Key to the EC2 Instance</h4>
+
+<p>Since you are already logged into the EC2 instance via <strong>EC2 Instance Connect</strong>, the next step is to add your public key to the <strong><sub>/.ssh/authorized_keys</sub></strong> file for the <code>ec2-user</code> (or whichever user you are using).</p>
+
+<ol>
+<li><p>Open the public key file on your local machine:</p>
+
+<pre><code class="language-bash">cat ~/.ssh/my-ec2-key.pub
+</code></pre></li>
+
+<li><p>Copy the output and paste it into the EC2 instance.</p></li>
+
+<li><p>On your EC2 instance (while logged in through EC2 Instance Connect), create or edit the <strong><sub>/.ssh/authorized_keys</sub></strong> file:</p>
+
+<pre><code class="language-bash">mkdir -p ~/.ssh
+nano ~/.ssh/authorized_keys
+</code></pre></li>
+
+<li><p>Paste your public key (from the <code>my-ec2-key.pub</code> file) into the <strong>authorized_keys</strong> file and save the changes.</p></li>
+
+<li><p>Set the correct permissions for the <code>.ssh</code> directory and <code>authorized_keys</code> file:</p>
+
+<pre><code class="language-bash">chmod 700 ~/.ssh
+chmod 600 ~/.ssh/authorized_keys
+</code></pre></li>
+
+<li><p>Exit EC2 Instance Connect:</p>
+
+<pre><code class="language-bash">exit
+</code></pre></li>
+</ol>
+
+<h4 id="ssh-into-the-ec2-instance-using-the-key">SSH into the EC2 Instance Using the Key</h4>
+
+<p>Ensure the private key has the correct permissions:</p>
+
+<pre><code class="language-bash">chmod 400 ~/.ssh/my-ec2-key
+</code></pre>
+
+<p>Now, connect to your EC2 instance using:</p>
+
+<pre><code class="language-bash">ssh -i ~/.ssh/my-ec2-key ec2-user@&lt;EC2_PUBLIC_IP&gt;
+</code></pre>
+
+<h4 id="ssh-using-a-certificate">SSH Using a Certificate</h4>
+
+<p>If you are using a certificate for authentication, use the following command:</p>
+
+<pre><code class="language-bash">ssh -i ~/.ssh/my-ec2-key -o CertificateFile=/path/to/ssh-certificate-cert.pub ec2-user@&lt;EC2_PUBLIC_IP&gt;
+</code></pre>
+
+<h4 id="example">Example:</h4>
+
+<pre><code class="language-bash">ssh -i void-test-ssh-key -o CertificateFile=void-test-ssh-user-cert.pub void@192.168.0.112
+</code></pre>
+
+<hr>
+
+    </div>
+  </div>
+
+  <footer class="footer-container">
+  <span>Built using Hanamark</span>
+  <span>Find me on <a href="https://x.com/fit_fr_nothing">X/Twitter</a></span>
+  <span>© 2025 Void</span>
+</footer>
+
+</body>
+
+</html>
