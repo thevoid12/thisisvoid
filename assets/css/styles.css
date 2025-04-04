@@ -281,13 +281,20 @@ td {
   justify-content: space-between;
   align-items: center;
   padding: 8px 0;
+  flex-wrap: nowrap;
 }
 
-.blog-post-title a {
-  color: #222;
-  text-decoration: none;
-  font-size: 16px;
-  font-weight: 500;
+.blog-post-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  /* allows text truncation or wrapping */
+}
+
+.blog-post-date {
+  flex-shrink: 0;
+  margin-left: 16px;
+  white-space: nowrap;
+  /* prevent wrapping */
 }
 
 .blog-post-title a:hover {
