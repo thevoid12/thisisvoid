@@ -2,197 +2,168 @@
 
 <head>
   <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-V11VFBGYB3"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V11VFBGYB3"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag('js', new Date());
 
-    gtag('config', 'G-V11VFBGYB3');
-  </script>
+  gtag('config', 'G-V11VFBGYB3');
+</script>
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Secure SSH with Host and User CAs:</title>
+  <title>Secure SSH with Host and User CAs</title>
 </head>
 
 <body>
   <link rel="stylesheet" href="/assets/css/styles.css" type="text/css">
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-  <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon-16.png">
-  <link rel="icon" type="image/png" sizes="24x24" href="/assets/images/favicon-24.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32.png">
-  <div class="header">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon-16.png">
+<link rel="icon" type="image/png" sizes="24x24" href="/assets/images/favicon-24.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32.png">
+<div class="header">
 
-    <div class="navbar-container">
-      <div class="navbar-title">
-        <a href="/index.html" class="navbar-brand">
-          <img src="/assets/images/favicon-32.png" alt="Logo" class="navbar-favicon">
-          thisisvoid.in
-        </a>
-      </div>
-
-      <section>
-        <ul class="navbar-menu">
-          <li><a href="./about.html">about</a></li>
-          <li><a href="./projects.html">code</a></li>
-          <li><a href="./reads.html">reads</a></li>
-          <li><a href="./readlogs.html">readlogs</a></li>
-          <li><a href="./watchlogs.html">watchlogs</a></li>
-        </ul>
-      </section>
+  <div class="navbar-container">
+    <div class="navbar-title">
+      <a href="/index.html" class="navbar-brand">
+        <img src="/assets/images/favicon-32.png" alt="Logo" class="navbar-favicon">
+        thisisvoid.in
+      </a>
     </div>
 
+    <section>
+      <ul class="navbar-menu">
+        <li><a href="./about.html">about</a></li>
+        <li><a href="./projects.html">code</a></li>
+        <li><a href="./reads.html">reads</a></li>
+        <li><a href="./readlogs.html">readlogs</a></li>
+        <li><a href="./watchlogs.html">watchlogs</a></li>
+      </ul>
+    </section>
   </div>
+
+</div>
 
 
   <div class="blog-post-container">
     <span class="blog-post-date">9 April 2025</span>
     <div class="blog-post-content">
-      <h1 id="secure-ssh-with-host-and-user-cas">Secure SSH with Host and User CAs:</h1>
+      <h1 id="secure-ssh-with-host-and-user-cas">Secure SSH with Host and User CAs</h1>
 
-      <ul>
-        <li>in this blog we will look at the implementation with host and user CA</li>
-        <li>host ca and user ca should be seperate. this is because in case of private key compromize you just have to
-          issue host ca or user ca again not both.</li>
-        <li>no not never ever share private key</li>
-        <li>we need to sign the generated key with ca&rsquo;s private key to generate the certificate</li>
-        <li>for host certficates we sign with host ca&rsquo;s key and for user certficates we sign with user ca&rsquo;s
-          key
-          <img src="../../assets/images/blogs/1.png" alt="recap" />
-        </li>
-      </ul>
+<ul>
+<li>in this blog we will look at the implementation with host and user CA</li>
+<li>host ca and user ca should be seperate. this is because in case of private key compromize you just have to issue host ca or user ca again not both.</li>
+<li>no not never ever share private key
+&mdash;</li>
+<li>we need to sign the generated key with ca&rsquo;s private key to generate the certificate</li>
+<li>for host certficates we sign with host ca&rsquo;s key and for user certficates we sign with user ca&rsquo;s key
+<img src="../../assets/images/blogs/1.png" alt="recap" /></li>
+</ul>
 
-      <h3 id="how-things-works">how things works:</h3>
+<h3 id="how-things-works">how things works:</h3>
 
-      <ul>
-        <li>
-          <p>let us assume: I have 1 machine which is certificate authority, 2 machines and 1 user. I want the user to
-            acess both the machines using certificate based ssh. how
-            <strong>so here we just have 1 CA for both user and host</strong>
-          </p>
+<ul>
+<li><p>let us assume: I have 1 machine which is certificate authority, 2 machines and 1 user. I want the user to acess both the machines using certificate based ssh. how
+<strong>so here we just have 1 CA for both user and host</strong></p>
 
-          <h4 id="overview-of-workflow">overview of workflow:</h4>
-        </li>
+<h4 id="overview-of-workflow">overview of workflow:</h4></li>
 
-        <li>
-          <p>The Certificate Authority (CA) signs public keys for the user, granting access to the machines.</p>
-        </li>
+<li><p>The Certificate Authority (CA) signs public keys for the user, granting access to the machines.</p></li>
 
-        <li>
-          <p>The machines are configured to trust the CA, verifying the certificates issued by it.</p>
-        </li>
+<li><p>The machines are configured to trust the CA, verifying the certificates issued by it.</p></li>
 
-        <li>
-          <p>The user uses their signed certificate to authenticate with the machines.</p>
+<li><p>The user uses their signed certificate to authenticate with the machines.</p>
 
-          <h4 id="steps-to-implement">steps to implement:</h4>
+<h4 id="steps-to-implement">steps to implement:</h4>
 
-          <h5 id="1-set-up-the-certificate-authority-ca">1. Set Up the Certificate Authority (CA):</h5>
-        </li>
+<h5 id="1-set-up-the-certificate-authority-ca">1. Set Up the Certificate Authority (CA):</h5></li>
 
-        <li>
-          <p>Log into the CA machine.</p>
-        </li>
+<li><p>Log into the CA machine.</p></li>
 
-        <li>
-          <p>Generate a CA key pair:</p>
-        </li>
-      </ul>
+<li><p>Generate a CA key pair:</p></li>
+</ul>
 
-      <pre><code class="language-bash">ssh-keygen -f /etc/ssh/ssh_ca -C &quot;Certificate Authority&quot; -N &quot;&quot;
+<pre><code class="language-bash">ssh-keygen -f /etc/ssh/ssh_ca -C &quot;Certificate Authority&quot; -N &quot;&quot;
 
 </code></pre>
 
-      <p>The flags -C and -N mean:</p>
+<p>The flags -C and -N mean:</p>
 
-      <p><strong>-C</strong> &ldquo;Certificate Authority&rdquo;:
-        This adds a comment to the key. It&rsquo;s typically used to help identify the purpose of the key. In this case,
-        the comment is &ldquo;Certificate Authority&rdquo;. This is just metadata and doesn&rsquo;t affect
-        functionality.</p>
+<p><strong>-C</strong> &ldquo;Certificate Authority&rdquo;:
+This adds a comment to the key. It&rsquo;s typically used to help identify the purpose of the key. In this case, the comment is &ldquo;Certificate Authority&rdquo;. This is just metadata and doesn&rsquo;t affect functionality.</p>
 
-      <p><strong>-N</strong> &ldquo;&rdquo;:
-        This sets the passphrase for the private key. An empty string &ldquo;&rdquo; means no passphrase is set, so the
-        private key will not be encrypted. This is often used for automation, but it has security implications—anyone
-        who gets the private key can use it without needing a password.</p>
+<p><strong>-N</strong> &ldquo;&rdquo;:
+This sets the passphrase for the private key. An empty string &ldquo;&rdquo; means no passphrase is set, so the private key will not be encrypted. This is often used for automation, but it has security implications—anyone who gets the private key can use it without needing a password.</p>
 
-      <p><strong>/etc/ssh/ssh_ca:</strong> Path to the CA private key.
-        <strong>/etc/ssh/ssh_ca.pub:</strong> CA public key.
-      </p>
+<p><strong>/etc/ssh/ssh_ca:</strong> Path to the CA private key.
+<strong>/etc/ssh/ssh_ca.pub:</strong> CA public key.</p>
 
-      <h5 id="2-configure-machines-to-trust-the-ca">2. Configure Machines to Trust the CA:</h5>
+<h5 id="2-configure-machines-to-trust-the-ca">2. Configure Machines to Trust the CA:</h5>
 
-      <p>On both machines (Machine 1 and Machine 2):</p>
+<p>On both machines (Machine 1 and Machine 2):</p>
 
-      <ul>
-        <li>Copy the CA&rsquo;s public key (ssh_ca.pub) to each machine.</li>
-        <li>Add the CA public key to <strong>/etc/ssh/sshd_config:</strong></li>
-      </ul>
+<ul>
+<li>Copy the CA&rsquo;s public key (ssh_ca.pub) to each machine.</li>
+<li>Add the CA public key to <strong>/etc/ssh/sshd_config:</strong></li>
+</ul>
 
-      <pre><code class="language-bash">TrustedUserCAKeys /etc/ssh/ssh_ca.pub
+<pre><code class="language-bash">TrustedUserCAKeys /etc/ssh/ssh_ca.pub
 </code></pre>
 
-      <ul>
-        <li>Restart the SSH service:</li>
-      </ul>
+<ul>
+<li>Restart the SSH service:</li>
+</ul>
 
-      <pre><code class="language-bash">sudo systemctl restart sshd
+<pre><code class="language-bash">sudo systemctl restart sshd
 </code></pre>
 
-      <h5 id="3-create-the-user-s-key-pair">3. Create the User&rsquo;s Key Pair:</h5>
+<h5 id="3-create-the-user-s-key-pair">3. Create the User&rsquo;s Key Pair:</h5>
 
-      <p>On the user&rsquo;s machine:</p>
+<p>On the user&rsquo;s machine:</p>
 
-      <ul>
-        <li>Generate an SSH key pair:</li>
-      </ul>
+<ul>
+<li>Generate an SSH key pair:</li>
+</ul>
 
-      <pre><code class="language-bash">ssh-keygen -f ~/.ssh/id_rsa_user -C &quot;user@yourdomain.com&quot;
+<pre><code class="language-bash">ssh-keygen -f ~/.ssh/id_rsa_user -C &quot;user@yourdomain.com&quot;
 
 </code></pre>
 
-      <p><strong><sub>/.ssh/id_rsa_user:</sub></strong> User&rsquo;s private key.
-        <strong><sub>/.ssh/id_rsa_user.pub:</sub></strong> User&rsquo;s public key.
-      </p>
+<p><strong><sub>/.ssh/id_rsa_user:</sub></strong> User&rsquo;s private key.
+<strong><sub>/.ssh/id_rsa_user.pub:</sub></strong> User&rsquo;s public key.</p>
 
-      <h5 id="4-sign-the-user-s-public-key">4. Sign the User&rsquo;s Public Key:</h5>
+<h5 id="4-sign-the-user-s-public-key">4. Sign the User&rsquo;s Public Key:</h5>
 
-      <p>On the CA machine:</p>
+<p>On the CA machine:</p>
 
-      <ul>
-        <li>Copy the user&rsquo;s public key (id_rsa_user.pub) to the CA machine.</li>
-        <li>Sign the user&rsquo;s public key:</li>
-      </ul>
+<ul>
+<li>Copy the user&rsquo;s public key (id_rsa_user.pub) to the CA machine.</li>
+<li>Sign the user&rsquo;s public key:</li>
+</ul>
 
-      <pre><code class="language-bash">ssh-keygen -s /etc/ssh/ssh_ca -I user_certificate -n &lt;username&gt; -V +30d ~/.ssh/id_rsa_user.pub
+<pre><code class="language-bash">ssh-keygen -s /etc/ssh/ssh_ca -I user_certificate -n &lt;username&gt; -V +30d ~/.ssh/id_rsa_user.pub
 
 </code></pre>
 
-      <p><strong>-s</strong> /etc/ssh/ssh_ca: Path to the CA private key.
-        <strong>-I</strong> user_certificate: Certificate Identifier.
-        <strong>-n</strong>
-        <username>: Restrict the certificate to <username> on the remote machine.(optional for example
-            user@yourdomain.com)
-            <strong>-V</strong> +30d: Valid for 30 days.
-      </p>
+<p><strong>-s</strong> /etc/ssh/ssh_ca: Path to the CA private key.
+<strong>-I</strong> user_certificate: Certificate Identifier.
+<strong>-n</strong> <username>: Restrict the certificate to <username> on the remote machine.(optional for example user@yourdomain.com)
+<strong>-V</strong> +30d: Valid for 30 days.</p>
 
-      <ul>
-        <li>
-          <p>Provide the signed certificate (id_rsa_user-cert.pub) to the user.</p>
+<ul>
+<li><p>Provide the signed certificate (id_rsa_user-cert.pub) to the user.</p>
 
-          <h5 id="5-configure-the-user-s-ssh-client">5. Configure the User&rsquo;s SSH Client:</h5>
+<h5 id="5-configure-the-user-s-ssh-client">5. Configure the User&rsquo;s SSH Client:</h5>
 
-          <p>On the user&rsquo;s machine:</p>
-        </li>
+<p>On the user&rsquo;s machine:</p></li>
 
-        <li>
-          <p>Add the CA public key and certificate to <sub>/.ssh/config:</sub></p>
-        </li>
-      </ul>
+<li><p>Add the CA public key and certificate to <sub>/.ssh/config:</sub></p></li>
+</ul>
 
-      <pre><code class="language-bash">Host machine1
+<pre><code class="language-bash">Host machine1
     Hostname &lt;machine1-ip&gt;
     User &lt;username&gt;
     IdentityFile ~/.ssh/id_rsa_user
@@ -207,14 +178,14 @@ Host machine2
 
 </code></pre>
 
-      <h5 id="6-test-the-connection">6. Test the Connection:</h5>
+<h5 id="6-test-the-connection">6. Test the Connection:</h5>
 
-      <p>From the user&rsquo;s machine, connect to Machine 1:</p>
+<p>From the user&rsquo;s machine, connect to Machine 1:</p>
 
-      <pre><code class="language-bash">ssh machine1
+<pre><code class="language-bash">ssh machine1
 </code></pre>
 
-      <pre><code class="language-bash">              ┌────────────────┐        ┌────────────────┐
+<pre><code class="language-bash">              ┌────────────────┐        ┌────────────────┐
               │ User Machine   │        │ CA Machine     │
               │                │        │                │
               │ Generate       │        │ Generate CA Key│
@@ -232,73 +203,66 @@ Host machine2
     └──────────────────────────────────────────────────────┘
 </code></pre>
 
-      <hr>
+<hr>
 
-      <h1 id="setting-up-ssh-with-two-certificate-authorities-user-ca-and-host-ca">Setting Up SSH with Two Certificate
-        Authorities (User CA and Host CA)</h1>
+<h1 id="setting-up-ssh-with-two-certificate-authorities-user-ca-and-host-ca">Setting Up SSH with Two Certificate Authorities (User CA and Host CA)</h1>
 
-      <h4 id="this-is-the-best-practice">this is the best practice</h4>
+<h4 id="this-is-the-best-practice">this is the best practice</h4>
 
-      <h2 id="overview-of-workflow-1">Overview of Workflow</h2>
+<h2 id="overview-of-workflow-1">Overview of Workflow</h2>
 
-      <ol>
-        <li><strong>User CA</strong>: Signs user public keys to authenticate users</li>
-        <li><strong>Host CA</strong>: Signs host public keys to authenticate servers</li>
-        <li>Machines trust the Host CA for server authentication, and the User CA for user authentication</li>
-      </ol>
+<ol>
+<li><strong>User CA</strong>: Signs user public keys to authenticate users</li>
+<li><strong>Host CA</strong>: Signs host public keys to authenticate servers</li>
+<li>Machines trust the Host CA for server authentication, and the User CA for user authentication</li>
+</ol>
 
-      <h2 id="steps-to-implement-1">Steps to Implement</h2>
+<h2 id="steps-to-implement-1">Steps to Implement</h2>
 
-      <h3 id="1-set-up-the-certificate-authorities-cas">1. Set Up the Certificate Authorities (CAs)</h3>
+<h3 id="1-set-up-the-certificate-authorities-cas">1. Set Up the Certificate Authorities (CAs)</h3>
 
-      <h4 id="on-the-user-ca-machine">On the User CA machine:</h4>
+<h4 id="on-the-user-ca-machine">On the User CA machine:</h4>
 
-      <pre><code class="language-bash">ssh-keygen -f /etc/ssh/user_ca -C &quot;User Certificate Authority&quot; -N &quot;&quot;
+<pre><code class="language-bash">ssh-keygen -f /etc/ssh/user_ca -C &quot;User Certificate Authority&quot; -N &quot;&quot;
 </code></pre>
 
-      <p>This creates:</p>
+<p>This creates:</p>
 
-      <ul>
-        <li><code>/etc/ssh/user_ca</code> (private key)</li>
-        <li><code>/etc/ssh/user_ca.pub</code> (public key)</li>
-      </ul>
+<ul>
+<li><code>/etc/ssh/user_ca</code> (private key)</li>
+<li><code>/etc/ssh/user_ca.pub</code> (public key)</li>
+</ul>
 
-      <h4 id="on-the-host-ca-machine">On the Host CA machine:</h4>
+<h4 id="on-the-host-ca-machine">On the Host CA machine:</h4>
 
-      <pre><code class="language-bash">ssh-keygen -f /etc/ssh/host_ca -C &quot;Host Certificate Authority&quot; -N &quot;&quot;
+<pre><code class="language-bash">ssh-keygen -f /etc/ssh/host_ca -C &quot;Host Certificate Authority&quot; -N &quot;&quot;
 </code></pre>
 
-      <p>This creates:</p>
+<p>This creates:</p>
 
-      <ul>
-        <li><code>/etc/ssh/host_ca</code> (private key)</li>
-        <li><code>/etc/ssh/host_ca.pub</code> (public key)</li>
-      </ul>
+<ul>
+<li><code>/etc/ssh/host_ca</code> (private key)</li>
+<li><code>/etc/ssh/host_ca.pub</code> (public key)</li>
+</ul>
 
-      <h3 id="2-sign-host-keys-with-host-ca">2. Sign Host Keys with Host CA</h3>
+<h3 id="2-sign-host-keys-with-host-ca">2. Sign Host Keys with Host CA</h3>
 
-      <p>On each host machine (Machine 1 and Machine 2):</p>
+<p>On each host machine (Machine 1 and Machine 2):</p>
 
-      <ol>
-        <li>
-          <p>Generate a host key pair:</p>
+<ol>
+<li><p>Generate a host key pair:</p>
 
-          <pre><code class="language-bash">ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N &quot;&quot;
-</code></pre>
-        </li>
+<pre><code class="language-bash">ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N &quot;&quot;
+</code></pre></li>
 
-        <li>
-          <p>Copy the host&rsquo;s public key (<code>ssh_host_rsa_key.pub</code>) to the Host CA machine</p>
-        </li>
+<li><p>Copy the host&rsquo;s public key (<code>ssh_host_rsa_key.pub</code>) to the Host CA machine</p></li>
 
-        <li>
-          <p>Sign the host key with the Host CA:
-            &ldquo;`bash
-            sudo ssh-keygen -s /etc/ssh/host_ca -I pi -h -V +1w /etc/ssh/pi_ssh_host_rsa_key.pub</p>
-        </li>
-      </ol>
+<li><p>Sign the host key with the Host CA:
+&ldquo;`bash
+sudo ssh-keygen -s /etc/ssh/host_ca -I pi -h -V +1w /etc/ssh/pi_ssh_host_rsa_key.pub</p></li>
+</ol>
 
-      <pre><code>   - `-h`: Indicates this is a host certificate
+<pre><code>   - `-h`: Indicates this is a host certificate
    - `-I host_machine1`: Identifier for the host
    - `-V +1y`: Certificate is valid for 1 year
 
@@ -313,9 +277,9 @@ Host machine2
    sudo systemctl restart sshd
 </code></pre>
 
-      <p>you can configure principal,host user ca&rsquo;s certs in ssd config</p>
+<p>you can configure principal,host  user ca&rsquo;s certs in ssd config</p>
 
-      <pre><code class="language-bash">TrustedUserCAKeys /etc/ssh/AuditCue_Tech_cert.pub
+<pre><code class="language-bash">TrustedUserCAKeys /etc/ssh/AuditCue_Tech_cert.pub
 AuthorizedPrincipalsFile /etc/ssh/auth_principals/%u
 
 
@@ -331,85 +295,75 @@ devops
 [ec2-user@ip-172-128-8-102 auth_principals]$
 </code></pre>
 
-      <h3 id="3-configure-hosts-to-trust-the-host-ca">3. Configure Hosts to Trust the Host CA</h3>
+<h3 id="3-configure-hosts-to-trust-the-host-ca">3. Configure Hosts to Trust the Host CA</h3>
 
-      <p>On all machines, including the User CA machine:</p>
+<p>On all machines, including the User CA machine:</p>
 
-      <ol>
-        <li>Copy the Host CA&rsquo;s public key (<code>host_ca.pub</code>) to each machine</li>
-        <li>Add it to <code>/etc/ssh/ssh_known_hosts</code> for server authentication:
+<ol>
+<li>Copy the Host CA&rsquo;s public key (<code>host_ca.pub</code>) to each machine</li>
+<li>Add it to <code>/etc/ssh/ssh_known_hosts</code> for server authentication:
 
-          <pre><code class="language-bash">
+<pre><code class="language-bash">
 @cert-authority * ssh-rsa AAAAB3... host_ca.pub
 </code></pre>
-        </li>
-      </ol>
+</li>
+</ol>
 
-      <h3 id="4-sign-user-keys-with-user-ca">4. Sign User Keys with User CA</h3>
+<h3 id="4-sign-user-keys-with-user-ca">4. Sign User Keys with User CA</h3>
 
-      <p>On the User CA machine:</p>
+<p>On the User CA machine:</p>
 
-      <ol>
-        <li>
-          <p>Receive the user&rsquo;s public key (<code>id_rsa_user.pub</code>)</p>
-        </li>
+<ol>
+<li><p>Receive the user&rsquo;s public key (<code>id_rsa_user.pub</code>)</p></li>
 
-        <li>
-          <p>Sign the user key:</p>
+<li><p>Sign the user key:</p>
 
-          <pre><code class="language-bash">ssh-keygen -s /etc/ssh/user_ca -I user_certificate -n &lt;username&gt; -V +30d ~/.ssh/id_rsa_user.pub
+<pre><code class="language-bash">ssh-keygen -s /etc/ssh/user_ca -I user_certificate -n &lt;username&gt; -V +30d ~/.ssh/id_rsa_user.pub
 </code></pre>
-          <ul>
-            <li><code>-s /etc/ssh/user_ca</code>: Path to User CA private key</li>
-            <li><code>-n &lt;username&gt;</code>: Restrict certificate to specific username</li>
-            <li><code>-V +30d</code>: Certificate is valid for 30 days</li>
-          </ul>
-        </li>
+<ul>
+<li><code>-s /etc/ssh/user_ca</code>: Path to User CA private key</li>
+<li><code>-n &lt;username&gt;</code>: Restrict certificate to specific username</li>
+<li><code>-V +30d</code>: Certificate is valid for 30 days</li>
+</ul></li>
 
-        <li>
-          <p>Provide the signed certificate (<code>id_rsa_user-cert.pub</code>) to the user</p>
-        </li>
-      </ol>
+<li><p>Provide the signed certificate (<code>id_rsa_user-cert.pub</code>) to the user</p></li>
+</ol>
 
-      <h3 id="5-configure-machines-to-trust-the-user-ca">5. Configure Machines to Trust the User CA</h3>
+<h3 id="5-configure-machines-to-trust-the-user-ca">5. Configure Machines to Trust the User CA</h3>
 
-      <p>On Machine 1 and Machine 2:</p>
+<p>On Machine 1 and Machine 2:</p>
 
-      <ol>
-        <li>Copy the User CA&rsquo;s public key (<code>user_ca.pub</code>) to each machine</li>
-        <li>Update <code>/etc/ssh/sshd_config</code>:
+<ol>
+<li>Copy the User CA&rsquo;s public key (<code>user_ca.pub</code>) to each machine</li>
+<li>Update <code>/etc/ssh/sshd_config</code>:
 
-          <pre><code class="language-bash">
+<pre><code class="language-bash">
 TrustedUserCAKeys /etc/ssh/user_ca.pub
 </code></pre>
-        </li>
-        <li>Restart SSH:
+</li>
+<li>Restart SSH:
 
-          <pre><code class="language-bash">
+<pre><code class="language-bash">
 sudo systemctl restart sshd
 </code></pre>
-        </li>
-      </ol>
+</li>
+</ol>
 
-      <h3 id="6-configure-the-user-s-ssh-client">6. Configure the User&rsquo;s SSH Client</h3>
+<h3 id="6-configure-the-user-s-ssh-client">6. Configure the User&rsquo;s SSH Client</h3>
 
-      <p>On the user&rsquo;s machine:</p>
+<p>On the user&rsquo;s machine:</p>
 
-      <ol>
-        <li>
-          <p>Add the host CA to <code>~/.ssh/known_hosts</code>:</p>
+<ol>
+<li><p>Add the host CA to <code>~/.ssh/known_hosts</code>:</p>
 
-          <pre><code class="language-bash">@cert-authority * ssh-rsa AAAAB3... host_ca.pub
+<pre><code class="language-bash">@cert-authority * ssh-rsa AAAAB3... host_ca.pub
 </code></pre>
-          <p>this step is optional and it is automatically done when you try to ssh into the machine</p>
-        </li>
+<p>this step is optional and it is automatically done when you try to ssh into the machine</p></li>
 
-        <li>
-          <p>Configure the user&rsquo;s <code>~/.ssh/config</code>:</p>
-        </li>
-      </ol>
+<li><p>Configure the user&rsquo;s <code>~/.ssh/config</code>:</p></li>
+</ol>
 
-      <pre><code class="language-ssh-config">   Host machine1
+<pre><code class="language-ssh-config">   Host machine1
        Hostname &lt;machine1-ip&gt;
        User &lt;username&gt;
        IdentityFile ~/.ssh/id_rsa_user
@@ -422,53 +376,52 @@ sudo systemctl restart sshd
        CertificateFile ~/.ssh/id_rsa_user-cert.pub
 </code></pre>
 
-      <p>this step is optinal as well so ssh quickly. all you need to do after configuring this is to run Host machine2
-      </p>
+<p>this step is optinal as well so ssh quickly. all you need to do after configuring this is to run Host machine2</p>
 
-      <pre><code class="language-bash">echo &quot;next we will look into architecture...&quot;
+<pre><code class="language-bash">echo &quot;next we will look into architecture...&quot;
 </code></pre>
 
-      <h2 id="system-architecture">System Architecture</h2>
+<h2 id="system-architecture">System Architecture</h2>
 
-      <p><img src="../../assets/images/blogs/5.png" alt="architecture" /></p>
+<p><img src="../../assets/images/blogs/5.png" alt="architecture" /></p>
 
-      <h2 id="best-practices-for-two-cas">Best Practices for Two CAs</h2>
+<h2 id="best-practices-for-two-cas">Best Practices for Two CAs</h2>
 
-      <h3 id="key-segmentation">Key Segmentation</h3>
+<h3 id="key-segmentation">Key Segmentation</h3>
 
-      <ul>
-        <li>Use separate machines or secure storage for User CA and Host CA private keys</li>
-      </ul>
+<ul>
+<li>Use separate machines or secure storage for User CA and Host CA private keys</li>
+</ul>
 
-      <h3 id="key-protection">Key Protection</h3>
+<h3 id="key-protection">Key Protection</h3>
 
-      <ul>
-        <li>Restrict access to CA private keys with strict permissions</li>
-      </ul>
+<ul>
+<li>Restrict access to CA private keys with strict permissions</li>
+</ul>
 
-      <h3 id="key-rotation">Key Rotation</h3>
+<h3 id="key-rotation">Key Rotation</h3>
 
-      <ul>
-        <li>Rotate both User CA and Host CA keys periodically</li>
-      </ul>
+<ul>
+<li>Rotate both User CA and Host CA keys periodically</li>
+</ul>
 
-      <h3 id="short-lived-certificates">Short-lived Certificates</h3>
+<h3 id="short-lived-certificates">Short-lived Certificates</h3>
 
-      <ul>
-        <li>Issue short-lived certificates for users to reduce the risk of compromise</li>
-      </ul>
+<ul>
+<li>Issue short-lived certificates for users to reduce the risk of compromise</li>
+</ul>
 
-      <h3 id="auditing-and-logging">Auditing and Logging</h3>
+<h3 id="auditing-and-logging">Auditing and Logging</h3>
 
-      <ul>
-        <li>Enable logging on SSH servers to monitor certificate-based logins and host authentications</li>
-      </ul>
+<ul>
+<li>Enable logging on SSH servers to monitor certificate-based logins and host authentications</li>
+</ul>
 
-      <hr>
+<hr>
 
-      <h4 id="config-example">config example:</h4>
+<h4 id="config-example">config example:</h4>
 
-      <pre><code class="language-bash">Host machine1
+<pre><code class="language-bash">Host machine1
     Hostname 192.168.1.10
     User ubuntu
     IdentityFile ~/.ssh/id_rsa_user
@@ -481,209 +434,174 @@ Host machine2
     CertificateFile ~/.ssh/id_rsa_user-cert.pub
 </code></pre>
 
-      <p>his configuration ensures:</p>
+<p>his configuration ensures:</p>
 
-      <ul>
-        <li>Secure user authentication using a certificate signed by the User CA.</li>
-        <li>Secure host verification using a certificate signed by the Host CA.</li>
-        <li>A simplified and secure SSH connection process for the user.</li>
-      </ul>
+<ul>
+<li>Secure user authentication using a certificate signed by the User CA.</li>
+<li>Secure host verification using a certificate signed by the Host CA.</li>
+<li>A simplified and secure SSH connection process for the user.</li>
+</ul>
 
-      <h5 id="1-host">1. Host</h5>
+<h5 id="1-host">1. Host</h5>
 
-      <p>Each Host block specifies the settings for connecting to a particular remote server. The term
-        &ldquo;host&rdquo; here refers to a remote machine you are connecting to using SSH. Each block is dedicated to
-        one machine (e.g., machine1 or machine2).</p>
+<p>Each Host block specifies the settings for connecting to a particular remote server. The term &ldquo;host&rdquo; here refers to a remote machine you are connecting to using SSH. Each block is dedicated to one machine (e.g., machine1 or machine2).</p>
 
-      <h4 id="2-components-of-the-configuration">2. Components of the Configuration</h4>
+<h4 id="2-components-of-the-configuration">2. Components of the Configuration</h4>
 
-      <h5 id="a-host">a. Host</h5>
+<h5 id="a-host">a. Host</h5>
 
-      <p>Specifies the alias or name used in the configuration to identify a remote machine.
-        Example: Host machine1 or Host machine2.
-        When you run ssh machine1 or ssh machine2, the settings in the corresponding block will apply.</p>
+<p>Specifies the alias or name used in the configuration to identify a remote machine.
+Example: Host machine1 or Host machine2.
+When you run ssh machine1 or ssh machine2, the settings in the corresponding block will apply.</p>
 
-      <h5 id="b-hostname">b. Hostname</h5>
+<h5 id="b-hostname">b. Hostname</h5>
 
-      <p>Specifies the actual IP address or domain name of the remote machine.
-        Example: <machine1-ip> is the IP address or FQDN (e.g., 192.168.1.10 or example.com).</p>
+<p>Specifies the actual IP address or domain name of the remote machine.
+Example: <machine1-ip> is the IP address or FQDN (e.g., 192.168.1.10 or example.com).</p>
 
-      <ul>
-        <li>
-          <p>this is nessary because this will verify the credibility of host certificate which is provided by host CA
-            to this user.
-            <code>/etc/ssh/ssh_known_hosts</code> for server authentication:
-          </p>
+<ul>
+<li><p>this is nessary because this will verify the credibility of host certificate which is provided by host CA to this user.
+<code>/etc/ssh/ssh_known_hosts</code> for server authentication:</p>
 
-          <pre><code class="language-bash">@cert-authority * ssh-rsa AAAAB3... host_ca.pub
+<pre><code class="language-bash">@cert-authority * ssh-rsa AAAAB3... host_ca.pub
 </code></pre>
-          <p>this * here allows all but we can configure that</p>
+<p>this * here allows all but we can configure that</p>
 
-          <h5 id="c-user">c. User</h5>
+<h5 id="c-user">c. User</h5>
 
-          <p>Specifies the username you will use to log in to the remote machine.
-            Example: <username> could be root, ubuntu, or any valid user on the remote machine.</p>
+<p>Specifies the username you will use to log in to the remote machine.
+Example: <username> could be root, ubuntu, or any valid user on the remote machine.</p>
 
-          <h5 id="d-identityfile">d. IdentityFile</h5>
+<h5 id="d-identityfile">d. IdentityFile</h5>
 
-          <p>Specifies the path to the user&rsquo;s private SSH key.
-            Example: ~/.ssh/id_rsa_user refers to the private key of the user that corresponds to the certificate
-            (id_rsa_user-cert.pub).</p>
+<p>Specifies the path to the user&rsquo;s private SSH key.
+Example: ~/.ssh/id_rsa_user refers to the private key of the user that corresponds to the certificate (id_rsa_user-cert.pub).</p>
 
-          <h5 id="e-certificatefile">e. CertificateFile</h5>
+<h5 id="e-certificatefile">e. CertificateFile</h5>
 
-          <p>Specifies the path to the SSH certificate signed by the User CA.
-            Example: ~/.ssh/id_rsa_user-cert.pub is the certificate file that proves the identity of the user, signed by
-            the User Certificate Authority (User CA).</p>
-        </li>
-      </ul>
+<p>Specifies the path to the SSH certificate signed by the User CA.
+Example: ~/.ssh/id_rsa_user-cert.pub is the certificate file that proves the identity of the user, signed by the User Certificate Authority (User CA).</p></li>
+</ul>
 
-      <h4 id="how-the-configuration-works-together">How the Configuration Works Together</h4>
+<h4 id="how-the-configuration-works-together">How the Configuration Works Together</h4>
 
-      <h5 id="authentication-flow">Authentication Flow:</h5>
+<h5 id="authentication-flow">Authentication Flow:</h5>
 
-      <ul>
-        <li>
-          <p>When you run ssh machine1, the SSH client uses the ~/.ssh/id_rsa_user private key and the
-            ~/.ssh/id_rsa_user-cert.pub certificate to prove your identity.</p>
-        </li>
+<ul>
+<li><p>When you run ssh machine1, the SSH client uses the ~/.ssh/id_rsa_user private key and the ~/.ssh/id_rsa_user-cert.pub certificate to prove your identity.</p></li>
 
-        <li>
-          <p>The certificate is validated by the remote host against the trusted User CA key.</p>
+<li><p>The certificate is validated by the remote host against the trusted User CA key.</p>
 
-          <h5 id="host-verification">Host Verification:</h5>
-        </li>
+<h5 id="host-verification">Host Verification:</h5></li>
 
-        <li>
-          <p>The SSH client verifies the remote server (e.g., machine1) using the Host Certificate
-            (ssh_host_rsa_key-cert.pub) signed by the Host CA.</p>
+<li><p>The SSH client verifies the remote server (e.g., machine1) using the Host Certificate (ssh_host_rsa_key-cert.pub) signed by the Host CA.</p>
 
-          <h5 id="trust-relationship">Trust Relationship:</h5>
-        </li>
+<h5 id="trust-relationship">Trust Relationship:</h5></li>
 
-        <li>
-          <p>The remote machine trusts the User CA to verify the user’s certificate.</p>
-        </li>
+<li><p>The remote machine trusts the User CA to verify the user’s certificate.</p></li>
 
-        <li>
-          <h2 id="the-ssh-client-trusts-the-host-ca-to-verify-the-host-s-certificate">The SSH client trusts the Host CA
-            to verify the host&rsquo;s certificate.</h2>
+<li>
+<h2 id="the-ssh-client-trusts-the-host-ca-to-verify-the-host-s-certificate">The SSH client trusts the Host CA to verify the host&rsquo;s certificate.</h2>
 
-          <h2 id="verifying-the-legitimacy-of-a-host-machine1-ip-or-example-com">Verifying the Legitimacy of a Host
-            (<code>&lt;machine1-ip&gt;</code> or <code>example.com</code>)</h2>
-        </li>
-      </ul>
+<h2 id="verifying-the-legitimacy-of-a-host-machine1-ip-or-example-com">Verifying the Legitimacy of a Host (<code>&lt;machine1-ip&gt;</code> or <code>example.com</code>)</h2></li>
+</ul>
 
-      <p>The legitimacy of the hostname (<code>&lt;machine1-ip&gt;</code> or <code>example.com</code>) is verified using
-        the <strong>host certificate</strong> issued by the <strong>Host CA</strong>. Here’s a detailed explanation:</p>
+<p>The legitimacy of the hostname (<code>&lt;machine1-ip&gt;</code> or <code>example.com</code>) is verified using the <strong>host certificate</strong> issued by the <strong>Host CA</strong>. Here’s a detailed explanation:</p>
 
-      <h2 id="verification-of-host-legitimacy"><strong>Verification of Host Legitimacy</strong></h2>
+<h2 id="verification-of-host-legitimacy"><strong>Verification of Host Legitimacy</strong></h2>
 
-      <h3 id="1-host-key-and-certificate">1. <strong>Host Key and Certificate</strong></h3>
+<h3 id="1-host-key-and-certificate">1. <strong>Host Key and Certificate</strong></h3>
 
-      <ul>
-        <li>Each host (e.g., <code>machine1</code> and <code>machine2</code>) has a private/public key pair:
+<ul>
+<li>Each host (e.g., <code>machine1</code> and <code>machine2</code>) has a private/public key pair:
 
-          <ul>
-            <li><code>ssh_host_rsa_key</code> (private key).</li>
-            <li><code>ssh_host_rsa_key.pub</code> (public key).</li>
-          </ul>
-        </li>
-        <li>The host’s public key is signed by the <strong>Host CA</strong>, creating a host certificate
-          (<code>ssh_host_rsa_key-cert.pub</code>).</li>
-      </ul>
+<ul>
+<li><code>ssh_host_rsa_key</code> (private key).</li>
+<li><code>ssh_host_rsa_key.pub</code> (public key).</li>
+</ul></li>
+<li>The host’s public key is signed by the <strong>Host CA</strong>, creating a host certificate (<code>ssh_host_rsa_key-cert.pub</code>).</li>
+</ul>
 
-      <h3 id="2-trusted-host-ca">2. <strong>Trusted Host CA</strong></h3>
+<h3 id="2-trusted-host-ca">2. <strong>Trusted Host CA</strong></h3>
 
-      <ul>
-        <li>The SSH client is configured to trust the <strong>Host CA</strong> by adding the Host CA&rsquo;s public key
-          to its <code>known_hosts</code> file or through configuration (<code>TrustedHostKeys</code> or
-          <code>@cert-authority</code> directives).</li>
-      </ul>
+<ul>
+<li>The SSH client is configured to trust the <strong>Host CA</strong> by adding the Host CA&rsquo;s public key to its <code>known_hosts</code> file or through configuration (<code>TrustedHostKeys</code> or <code>@cert-authority</code> directives).</li>
+</ul>
 
-      <h3 id="3-during-connection">3. <strong>During Connection</strong></h3>
+<h3 id="3-during-connection">3. <strong>During Connection</strong></h3>
 
-      <ul>
-        <li>When the user initiates an SSH connection:
+<ul>
+<li>When the user initiates an SSH connection:
 
-          <ul>
-            <li>The server provides its signed host certificate (<code>ssh_host_rsa_key-cert.pub</code>) to the client.
-            </li>
-            <li>The client verifies the certificate using the trusted <strong>Host CA</strong> public key.</li>
-          </ul>
-        </li>
-      </ul>
+<ul>
+<li>The server provides its signed host certificate (<code>ssh_host_rsa_key-cert.pub</code>) to the client.</li>
+<li>The client verifies the certificate using the trusted <strong>Host CA</strong> public key.</li>
+</ul></li>
+</ul>
 
-      <h3 id="4-legitimacy-checks">4. <strong>Legitimacy Checks</strong></h3>
+<h3 id="4-legitimacy-checks">4. <strong>Legitimacy Checks</strong></h3>
 
-      <p>The SSH client performs the following checks:</p>
+<p>The SSH client performs the following checks:</p>
 
-      <ul>
-        <li><strong>Hostname Match</strong>: Ensures the hostname in the certificate matches the hostname of the server
-          (<code>&lt;machine1-ip&gt;</code> or <code>example.com</code>).</li>
-        <li><strong>Expiration Date</strong>: Ensures the certificate is not expired.</li>
-        <li><strong>Signature Validation</strong>: Verifies that the certificate was issued by the trusted Host CA.</li>
-      </ul>
+<ul>
+<li><strong>Hostname Match</strong>: Ensures the hostname in the certificate matches the hostname of the server (<code>&lt;machine1-ip&gt;</code> or <code>example.com</code>).</li>
+<li><strong>Expiration Date</strong>: Ensures the certificate is not expired.</li>
+<li><strong>Signature Validation</strong>: Verifies that the certificate was issued by the trusted Host CA.</li>
+</ul>
 
-      <h3 id="5-trust-decision">5. <strong>Trust Decision</strong></h3>
+<h3 id="5-trust-decision">5. <strong>Trust Decision</strong></h3>
 
-      <ul>
-        <li>If the certificate passes all checks:
+<ul>
+<li>If the certificate passes all checks:
 
-          <ul>
-            <li>The SSH client trusts the host and establishes the connection.</li>
-          </ul>
-        </li>
-        <li>If the certificate is invalid:
+<ul>
+<li>The SSH client trusts the host and establishes the connection.</li>
+</ul></li>
+<li>If the certificate is invalid:
 
-          <ul>
-            <li>The connection is terminated, and the client displays a warning.</li>
-          </ul>
-        </li>
-      </ul>
+<ul>
+<li>The connection is terminated, and the client displays a warning.</li>
+</ul></li>
+</ul>
 
-      <hr>
+<hr>
 
-      <h2 id="how-this-prevents-attacks"><strong>How This Prevents Attacks</strong></h2>
+<h2 id="how-this-prevents-attacks"><strong>How This Prevents Attacks</strong></h2>
 
-      <h3 id="1-man-in-the-middle-mitm-attack-prevention">1. <strong>Man-in-the-Middle (MITM) Attack Prevention</strong>
-      </h3>
+<h3 id="1-man-in-the-middle-mitm-attack-prevention">1. <strong>Man-in-the-Middle (MITM) Attack Prevention</strong></h3>
 
-      <ul>
-        <li>An attacker cannot forge a valid host certificate without the Host CA’s private key.</li>
-        <li>If an attacker presents a fake hostname or certificate, the client will detect the mismatch and terminate
-          the connection.</li>
-      </ul>
+<ul>
+<li>An attacker cannot forge a valid host certificate without the Host CA’s private key.</li>
+<li>If an attacker presents a fake hostname or certificate, the client will detect the mismatch and terminate the connection.</li>
+</ul>
 
-      <h3 id="2-impersonation-protection">2. <strong>Impersonation Protection</strong></h3>
+<h3 id="2-impersonation-protection">2. <strong>Impersonation Protection</strong></h3>
 
-      <ul>
-        <li>Only the legitimate host, with a private key corresponding to its signed certificate, can present a valid
-          host certificate.</li>
-      </ul>
+<ul>
+<li>Only the legitimate host, with a private key corresponding to its signed certificate, can present a valid host certificate.</li>
+</ul>
 
-      <hr>
+<hr>
 
-      <h2 id="key-configuration-on-the-client"><strong>Key Configuration on the Client</strong></h2>
+<h2 id="key-configuration-on-the-client"><strong>Key Configuration on the Client</strong></h2>
 
-      <p>To trust the <strong>Host CA</strong>, add the following entry to your <code>~/.ssh/known_hosts</code> file:
-      </p>
+<p>To trust the <strong>Host CA</strong>, add the following entry to your <code>~/.ssh/known_hosts</code> file:</p>
 
-      <pre><code class="language-plaintext">@cert-authority *.example.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEArandomHostCAPublicKey
+<pre><code class="language-plaintext">@cert-authority *.example.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEArandomHostCAPublicKey
 </code></pre>
 
-      <ul>
-        <li>add tustedhostca in sshdconfig path to public key ca</li>
-      </ul>
+<ul>
+<li>add tustedhostca in sshdconfig path to public key ca</li>
+</ul>
 
     </div>
   </div>
 
   <footer class="footer-container">
-    <span>Built using Hanamark</span>
-    <span>Find me on <a href="https://x.com/fit_fr_nothing">X/Twitter</a></span>
-    <span>© 2025 Void</span>
-  </footer>
+  <span>Built using Hanamark</span>
+  <span>Find me on <a href="https://x.com/fit_fr_nothing">X/Twitter</a></span>
+  <span>© 2025 Void</span>
+</footer>
 
 </body>
 
