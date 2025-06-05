@@ -49,19 +49,19 @@
 
 
   <div class="blog-post-container">
-    <span class="blog-post-date">5 May 2025</span>
+    <span class="blog-post-date">5 June 2025</span>
     <div class="blog-post-content">
       <h1 id="secure-ssh-with-host-and-user-cas">Secure SSH with Host and User CAs</h1>
 
 <ul>
 <li>in this blog we will look at the implementation with host and user CA</li>
 <li>host ca and user ca should be seperate. this is because in case of private key compromize you just have to issue host ca or user ca again not both.</li>
-<li>no not never ever share private key
-&mdash;</li>
+<li>no not never ever share private key</li>
 <li>we need to sign the generated key with ca&rsquo;s private key to generate the certificate</li>
-<li>for host certficates we sign with host ca&rsquo;s key and for user certficates we sign with user ca&rsquo;s key
-<img src="../../assets/images/blogs/1.png" alt="recap" /></li>
+<li>for host certficates we sign with host ca&rsquo;s key and for user certficates we sign with user ca&rsquo;s key</li>
 </ul>
+
+<p><img src="../../assets/images/blogs/1.png" alt="recap" /></p>
 
 <h3 id="how-things-works">how things works:</h3>
 
@@ -96,7 +96,7 @@
 This adds a comment to the key. It&rsquo;s typically used to help identify the purpose of the key. In this case, the comment is &ldquo;Certificate Authority&rdquo;. This is just metadata and doesn&rsquo;t affect functionality.</p>
 
 <p><strong>-N</strong> &ldquo;&rdquo;:
-This sets the passphrase for the private key. An empty string &ldquo;&rdquo; means no passphrase is set, so the private key will not be encrypted. This is often used for automation, but it has security implications—anyone who gets the private key can use it without needing a password.</p>
+This sets the passphrase for the private key. An empty string &ldquo;&rdquo; means no passphrase is set, so the private key will not be encrypted. This is often used for automation, but it has security implications anyone who gets the private key can use it without needing a password.</p>
 
 <p><strong>/etc/ssh/ssh_ca:</strong> Path to the CA private key.
 <strong>/etc/ssh/ssh_ca.pub:</strong> CA public key.</p>
