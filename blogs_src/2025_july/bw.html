@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+
+<head>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V11VFBGYB3"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag('js', new Date());
+
+  gtag('config', 'G-V11VFBGYB3');
+</script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Don't over engineer. No one is going to use your product!</title>
+</head>
+
+<body>
+  <link rel="stylesheet" href="/assets/css/styles.css" type="text/css">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon-16.png">
+<link rel="icon" type="image/png" sizes="24x24" href="/assets/images/favicon-24.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32.png">
+<div class="header">
+
+  <div class="navbar-container">
+    <div class="navbar-title">
+      <a href="/index.html" class="navbar-brand">
+        <img src="/assets/images/favicon-32.png" alt="Logo" class="navbar-favicon">
+        thisisvoid.in
+      </a>
+    </div>
+
+    <section>
+      <ul class="navbar-menu">
+        <li><a href="./about.html">about</a></li>
+        <li><a href="./projects.html">code</a></li>
+        <li><a href="./reads.html">reads</a></li>
+        <li><a href="./readlogs.html">readlogs</a></li>
+        <li><a href="./watchlogs.html">watchlogs</a></li>
+      </ul>
+    </section>
+  </div>
+
+</div>
+
+
+  <div class="blog-post-container">
+    <span class="blog-post-date">5 July 2025</span>
+    <div class="blog-post-content">
+      <h1 id="don-t-over-engineer-no-one-is-going-to-use-your-product">Don&rsquo;t over engineer. No one is going to use your product!</h1>
+
+<ul>
+<li><p>How many times have you heard this phrase <strong>&ldquo;Don&rsquo;t over engineer. You don&rsquo;t have audience so no one will use your product apart from your first circle&rdquo;</strong> from people around you.</p>
+
+<p><img src="../../assets/images/blogs/7.jpg" alt="whatever happens happens" /></p></li>
+
+<li><p>It sucks but most of the time that&rsquo;s the reality. So what can we do about it? Iterate fast and build something small that a maximum of 10 use it?
+You see this pattern very common among products vibe coders build and display. Not all but largely. All they want is things to work and once it works they push it out just to show how quickly they can iterate and build. But what if it suddenly blows up? Is your code structured in the right way so that it can be seamlessly expanded at least to a certain extent?</p></li>
+
+<li><p>Okay enough preface. I wanted to set context before going on to explain what happened to my small tiny little game and how me being ambitious saved me and my pocket from embarrassment.</p></li>
+
+<li><p>I spent a large portion of May building my multiplayer quiz battle royal game. Which is a very simple game where you compete with your friends or with a bunch of bots on whatever quiz topic you want. It works like a real-time multiplayer with real-time chats, leaderboard, sync engine to make sure every player as well as bots are in same level and a bunch of usual quiz stuff like analytics etc.</p></li>
+
+<li><p>I took it up as a challenge for me to learn and experiment how effective Golang is in handling WebSockets and as a backend guy how intuitively I can build UI with just HTML, Tailwind and a lot of JavaScript.</p></li>
+
+<li><p>I built this and did a bunch of load testing despite knowing that I won&rsquo;t market it anywhere. I did that just to make sure I deep dive and understand how Locust works.</p></li>
+
+<li><p>This game&rsquo;s heart is an AI component which at first I directly used Gemini 2.5 Pro. Google has Gemini package for Golang and I wrote a wrapper around it for my use case to access quiz data. Later I got to know about OpenRouter and I had this hunch that OpenRouter would be a better alternative than directly accessing the model (I was right about it).</p></li>
+
+<li><p>I did all my required testing, pushed to prod and sent it to my man <a href="https://x.com/the_void_state" target="_blank">mani</a> anna to try it out. He gave me a feedback which I never thought of. He told me that this game might be more suitable for kids to play.</p></li>
+</ul>
+
+<p><img src="../../assets/images/blogs/8.png" alt="mani anna chat" /></p>
+
+<pre><code>At that time I didn't care much. Then I sent it to my mom to play with me. We played a couple of games with the bots, she liked it and forget the game but she didn't actually believe that I am decent enough to build an actual working website xd 
+</code></pre>
+
+<ul>
+<li>few days passed. Suddenly I get a Grafana alert. I used a extremely small machine. You don&rsquo;t add pager duties to personal projects but again I wanted to explore Grafana Cloud and Node Exporters especially how quickly I can set it up. Most of these alerting tools are free for a user or two. If there was no Grafana I would have got a hefty bill or in the worst case the whole application could have crashed.</li>
+<li>I didn&rsquo;t know who is playing. Again thanks to my extensive logging which you don&rsquo;t usually do in pet projects, I was quickly able to see traffic from the same IP address. This usually means that you are under some kind of DoS attack. But I am nobody to DoS plus I saw majority of the initial requests had played a game completely till the end which is enough evidence for me to say it has found its own audience.</li>
+</ul>
+
+<p><img src="../../assets/images/blogs/9.png" alt="signups" />
+  After the initial small peak, it blew up 3x on the next consecutive week in mid-June</p>
+
+<ul>
+<li>The main thing I was worried about here is the LLM cost and app shouldn&rsquo;t crash. Assume 5000* 5 bots each and so on, aprox half a mil requests easily for just a very very small bunch of users.</li>
+<li>I was stupid that I went ahead to prod with Gemini 2.5 Pro. Just because I was using OpenRouter I saved myself from a huge bill by swapping it with DeepSeek R1, Sarvam, and if none of the free ones available then Gemini Flash. This could never be possible if I used Gemini API directly.</li>
+<li>The one big mistake I did lethargically here is using env&rsquo;s because who cares. My use case is straight forward no one will login into my system so I injected env through Ansible Vault which is AES encrypted. Usually in a decently monetizable project I would have used AWS Secret Manager or HashiCorp Vault without even thinking twice. The mental peace and the flexibility is way more than the cost I would spend. But here is the main problem with env: You see a spike and now if I need to swap from Gemini to something else I can&rsquo;t swap API key because the key is loaded into the environment. So I need to restart it. If you are remotely into optimizing reads and writes you would have guessed how I made sure things are fast. i.e. lots of caches. So if I restart abruptly the game experience would be completely spoiled and the game won&rsquo;t work as it meant to. OpenRouter saved me because all I need to do is just change OpenRouter settings not the key. Same could have been done if I used some sort of secret manager. Luckily I had no problems with them this time.</li>
+<li>Oops I completely went out of track. I did go and investigate who were the users. They were all school kids just like Mani predicted. My mom sent it to her friend, she forwarded it and it reached a primary school ICT teacher and just for students to have fun and learn she made them play and they told their friends and on and on&hellip;.</li>
+<li>Even I knew at max 5 would play the game but I still optimized which I would have never done if my focus was to build for just 5.
+
+<ul>
+<li>I added extensive logging<br>
+</li>
+<li>Load tested<br>
+</li>
+<li>Telemetry<br>
+</li>
+<li>OpenRouter to manage cost<br>
+</li>
+<li>Caching<br>
+</li>
+<li>I even optimized LLM cost by saving similar topics once the quiz is over and giving the question to others if the same topic is requested.</li>
+</ul></li>
+<li>I did all these not because I anticipated it, it&rsquo;s because I wanna improve and the probability of something breaking is higher when a lot of users use so does the learning in making sure things don&rsquo;t break. I would never improve if I don&rsquo;t start building for imaginary moderate scale despite I might or might not have a large userbase.</li>
+<li>I hope you liked this one. I haven&rsquo;t built anything in the past month as I am going through a very rough phase now. Share your experiences in my DMs so that I can learn from you guys. Until then byeee.</li>
+</ul>
+
+    </div>
+  </div>
+
+  <footer class="footer-container">
+  <span>Built using Hanamark</span>
+  <span>Find me on <a href="https://x.com/fit_fr_nothing">X/Twitter</a></span>
+  <span>© 2025 Void</span>
+</footer>
+
+</body>
+
+</html>
