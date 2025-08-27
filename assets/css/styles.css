@@ -1,5 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono&display=swap');
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+  /* font-family: -apple-system, BlinkMacSystemFont, Roboto, sans-serif; */
+  font-family: 'Space Mono', monospace;
   line-height: 1.7;
   margin: 0 auto;
   padding: .5rem 1rem;
