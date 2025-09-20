@@ -75,7 +75,17 @@
 </ul>
 
 <pre><code class="language-go">we need to implement a new feature called RBAC. 
-create a new folder called rbac/ where we will have a file called master_permision.py. which will contain enums like const ( PermCreateIncident = 1 PermViewIncident = 2 PermDeleteIncident = 3 PermUpdateIncident = 4 PermViewAllIncident=5, Audittrail.... PermAll= 0 ) and a map which maps role name with permisions like admin= All,user={PermcrreateIncindent,view,Update} with this will create byte array and store it in db role_colume upon which we will do a bitwise AND operation to check if the user has the paticular permission. for example user A has permission 0001100 and if we check for permission 00001000. doing an AND gate will give us 1 at that bit which means we have the required permission. DO not implement the bitwise check now or adding it to the db just create the file and once I verify it we will proceed forward.
+create a new folder called rbac/ where we will have a file called
+ master_permision.py. 
+ which will contain enums like const (PermCreateIncident = 1 
+ PermViewIncident = 2 PermDeleteIncident = 3 PermUpdateIncident = 4 PermViewAllIncident=5, Audittrail.... PermAll= 0 ) 
+ and a map which maps role name with permisions like admin= All,user={PermcrreateIncindent,view,Update}
+  with this will create byte array and store it in db role_column
+   upon which we will do a bitwise AND operation to check if the user has the paticular permission. 
+   for example user A has permission 0001100 and if we check for permission 00001000.
+    doing an AND gate will give us 1 at that bit which means we have the required permission. 
+    DO not implement the bitwise check now or adding it to the db
+     just create the file and once I verify it we will proceed forward.
 </code></pre>
 
 <ul>
